@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Introduction
 
@@ -22,13 +17,15 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 
 **Load Libraries for plotting**
-```{r, message=FALSE, warning=FALSE, echo=TRUE}
+
+```r
 library(ggplot2)
 library(lattice)
 ```
 
 ## Loading and preprocessing the data
-```{r, results="hide"}
+
+```r
 # creates a 'Data' subdirectory if none exists
 mainDir <- "C:/Users/User/Google Drive/Coursera/ReproducibleResearch/Assignment1"
 subDir <- "Data"
@@ -53,10 +50,10 @@ if (file.exists(destfile)) {
     download.file(url, destfile, mode="wb")
     unzip(fileName, exdir = mainDir,subDir)
 }
-
 ```
 
-```{r}
+
+```r
 #read the CSV file and format the 'date' column
 file_path <- file.path(mainDir, subDir, "activity.csv")
 df <- read.csv(file_path, header = TRUE, sep=',', na.strings = 'NA')
@@ -73,6 +70,16 @@ colnames(df_byday) <- c("date", "steps")
 head(df_byday)
 ```
 
+```
+##         date steps
+## 1 2012-10-02   126
+## 2 2012-10-03 11352
+## 3 2012-10-04 12116
+## 4 2012-10-05 13294
+## 5 2012-10-06 15420
+## 6 2012-10-07 11015
+```
+
 ## Mean total number of steps taken per day
 For this part of the assignment, I've have ignored the missing values in the dataset.
 
@@ -80,8 +87,8 @@ For this part of the assignment, I've have ignored the missing values in the dat
 
 
 The histogram is created using base plotting package with following code:
-```{r plot1}
 
+```r
 #create histogram (NA rows removed)
 plot1 <- hist(df_byday$steps, 
      col='red', 
@@ -90,13 +97,26 @@ plot1 <- hist(df_byday$steps,
      ylim = c(0,20),
      main='Histogram of Total # Steps Taken Each Day', 
      xlab='Total Steps per Day')
-
 ```
 
+![](PA1_template_files/figure-html/plot1-1.png)
+
 2. Calculated and report the mean and median total number of steps taken per day
-```{r}
+
+```r
 mean(df_byday$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(df_byday$steps)
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -105,7 +125,8 @@ median(df_byday$steps)
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
-```{r}
+
+```r
 # create data frame which calculates average steps per interval over the 53 days
 mean_steps <- aggregate(df_complete$steps, 
                        by=list(df_complete$interval), 
@@ -116,7 +137,8 @@ colnames(mean_steps) <- c("interval", "steps")
 ```
 
 The time series plot is created using ggplot package with following code:
-```{r plot2}
+
+```r
 #create plot using ggplot package
 library(ggplot2)
 plot2 <- ggplot(data = mean_steps, aes(interval, steps)) + 
@@ -127,9 +149,12 @@ plot2 <- ggplot(data = mean_steps, aes(interval, steps)) +
 plot(plot2)
 ```
 
+![](PA1_template_files/figure-html/plot2-1.png)
+
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r}
+
+```r
 # find the maximum mean position
 max_mean_position <- which(mean_steps$steps == max(mean_steps$steps))
 
@@ -144,13 +169,15 @@ There are a number of days/intervals where there are missing values (coded as NA
 
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 #count total NAs in data set
 total_NA <- sum(is.na(df))
 ```
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-```{r}
+
+```r
 # returns a integer vector of all NA position
 NA_position <- which(is.na(df$steps))
 
@@ -164,7 +191,8 @@ df[NA_position, "steps"] <- vector
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r}
+
+```r
 # create revised data frame for daily total steps
 df_byday2 <- aggregate(df$steps, list(df$date), sum)
 
@@ -174,10 +202,21 @@ colnames(df_byday2) <- c("date", "steps")
 head(df_byday2)
 ```
 
+```
+##         date    steps
+## 1 2012-10-01 10766.19
+## 2 2012-10-02   126.00
+## 3 2012-10-03 11352.00
+## 4 2012-10-04 12116.00
+## 5 2012-10-05 13294.00
+## 6 2012-10-06 15420.00
+```
+
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 Histogram created with the following code:
-```{r plot3}
+
+```r
 #use base plotting package for histogram
 plot3 <- hist(df_byday2$steps, 
               col='red', 
@@ -188,10 +227,24 @@ plot3 <- hist(df_byday2$steps,
               xlab='Total Steps per Day')
 ```
 
-```{r}
+![](PA1_template_files/figure-html/plot3-1.png)
+
+
+```r
 # check revised mean and median
 mean(df_byday2$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(df_byday2$steps)
+```
+
+```
+## [1] 10766.19
 ```
 The mean value has remained the same the strategy of replacing NAs results in consistency
 
@@ -200,7 +253,8 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
 1.  Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 # add columns for 'day of week' and 'weekday /weekend'
 df$dayofweek <- weekdays(as.Date(df$date,'%d-%m-%Y'))
 
@@ -216,10 +270,21 @@ colnames(mean_steps2) <- c("dayofweek", "weekend", "interval", "steps")
 head(mean_steps2)
 ```
 
+```
+##   dayofweek weekend interval    steps
+## 1    Friday weekday        0 8.307244
+## 2    Monday weekday        0 9.418355
+## 3  Thursday weekday        0 9.375844
+## 4   Tuesday weekday        0 0.000000
+## 5 Wednesday weekday        0 7.931400
+## 6  Saturday weekend        0 4.672825
+```
+
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
 Panel Plot created using lattice package with the following code:
-```{r plot4}
+
+```r
 plot4 <- xyplot(steps ~ interval | weekend, mean_steps2, 
        type="l", 
        lwd=1, 
@@ -229,6 +294,8 @@ plot4 <- xyplot(steps ~ interval | weekend, mean_steps2,
 
 plot(plot4)
 ```
+
+![](PA1_template_files/figure-html/plot4-1.png)
 
 ## Conclusions
 
